@@ -45,6 +45,9 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# Build directory
+/build/
+
 # API Keys and sensitive configuration
 config/api_keys.dart
 .env
