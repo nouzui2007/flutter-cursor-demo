@@ -64,6 +64,13 @@ class _EmailDialogState extends State<EmailDialog> {
         pinsToSend = widget.pins;
       }
 
+      if (pinsToSend.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('送信するピンデータがありません')),
+        );
+        return;
+      }
+
       final body = _emailService.createEmailBody(pinsToSend);
       
       await _emailService.sendEmail(
@@ -83,8 +90,19 @@ class _EmailDialogState extends State<EmailDialog> {
       }
     } catch (e) {
       if (mounted) {
+        String errorMessage = 'エラーが発生しました';
+        if (e is Exception) {
+          errorMessage = e.toString().replaceAll('Exception: ', '');
+        } else {
+          errorMessage = '予期しないエラーが発生しました: $e';
+        }
+        
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('エラーが発生しました: $e')),
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5),
+          ),
         );
       }
     } finally {

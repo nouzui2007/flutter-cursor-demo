@@ -17,10 +17,21 @@ class EmailService {
       },
     );
 
-    if (await canLaunchUrl(emailUri)) {
-      await launchUrl(emailUri);
-    } else {
-      throw Exception('メールアプリを起動できませんでした');
+    try {
+      if (await canLaunchUrl(emailUri)) {
+        final result = await launchUrl(emailUri);
+        if (!result) {
+          throw Exception('メールアプリの起動に失敗しました');
+        }
+      } else {
+        throw Exception('メールアプリを起動できませんでした。デバイスにメールアプリがインストールされているか確認してください。');
+      }
+    } catch (e) {
+      if (e is Exception) {
+        rethrow;
+      } else {
+        throw Exception('メール送信で予期しないエラーが発生しました: $e');
+      }
     }
   }
 

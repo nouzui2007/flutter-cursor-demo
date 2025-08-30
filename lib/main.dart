@@ -195,8 +195,8 @@ class _MapPageState extends State<MapPage> {
     );
   }
 
-  void _showPinList() {
-    Navigator.of(context).push(
+  void _showPinList() async {
+    await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => PinListScreen(
           pins: _pins,
@@ -208,6 +208,8 @@ class _MapPageState extends State<MapPage> {
         ),
       ),
     );
+    // 画面から戻った際にピンデータを再読み込み
+    await _loadPins();
   }
 
   @override
