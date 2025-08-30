@@ -3,11 +3,17 @@
 # APIキーを適用するスクリプト
 # 使用方法: ./scripts/apply_api_keys.sh
 
-# 設定ファイルからAPIキーを読み込み
-API_KEY=$(grep "googleMapsApiKey = " config/api_keys.dart | sed "s/.*'\(.*\)'.*/\1/")
+# ローカル設定ファイルからAPIキーを読み込み
+if [ -f "config/api_keys_local.dart" ]; then
+    API_KEY=$(grep "googleMapsApiKey = " config/api_keys_local.dart | sed "s/.*'\(.*\)'.*/\1/")
+else
+    echo "Error: config/api_keys_local.dart not found"
+    echo "Please create this file with your API key"
+    exit 1
+fi
 
 if [ -z "$API_KEY" ]; then
-    echo "Error: API key not found in config/api_keys.dart"
+    echo "Error: API key not found in config/api_keys_local.dart"
     exit 1
 fi
 

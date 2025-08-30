@@ -50,6 +50,7 @@ app.*.map.json
 
 # API Keys and sensitive configuration
 config/api_keys.dart
+config/api_keys_local.dart
 .env
 .env.local
 .env.production
