@@ -22,14 +22,11 @@ flutter pub get
 
 #### 方法1: 自動設定（推奨）
 
-1. `config/api_keys_local.dart`ファイルを作成
-2. 以下の内容でAPIキーを設定：
-   ```dart
-   class ApiKeysLocal {
-     static const String googleMapsApiKey = 'YOUR_ACTUAL_API_KEY_HERE';
-   }
+1. `.env`ファイルを作成し、以下の内容でAPIキーを設定：
    ```
-3. スクリプトを実行してAPIキーを適用：
+   GOOGLE_MAPS_API_KEY=your_actual_api_key_here
+   ```
+2. スクリプトを実行してAPIキーを適用：
    ```bash
    ./scripts/apply_api_keys.sh
    ```
@@ -41,7 +38,7 @@ flutter pub get
    - `ios/Runner/AppDelegate.swift`
 2. `YOUR_GOOGLE_MAPS_API_KEY_HERE`を実際のAPIキーに置換
 
-**注意**: `config/api_keys_local.dart`は`.gitignore`に含まれているため、リモートリポジトリに送信されません。
+**注意**: `.env`ファイルは`.gitignore`に含まれているため、リモートリポジトリに送信されません。
 
 ### 3. アプリのビルド
 
