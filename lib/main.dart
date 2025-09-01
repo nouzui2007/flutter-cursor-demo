@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
+
+
 import 'l10n/app_localizations.dart';
 import 'models/map_pin.dart';
 import 'services/storage_service.dart';
@@ -103,20 +105,18 @@ class _MapPageState extends State<MapPage> {
   MapType _mapType = MapType.normal;
   bool _isLoading = true;
 
-  // 初期位置（現在位置 - 東京）
+  // 初期位置（デフォルトは東京、現在位置取得後に更新）
   static const CameraPosition _initialPosition = CameraPosition(
     target: LatLng(35.6762, 139.6503),
     zoom: 15.0, // 街路レベルのズーム
   );
-
-  // 現在位置表示時のズームレベル
-  static const double _currentLocationZoom = 18.0; // 建物レベルのズーム
 
   @override
   void initState() {
     super.initState();
     _loadPins();
     _requestLocationPermission();
+    _initializeCurrentLocation();
   }
 
   /// 位置情報の許可を要求
@@ -124,6 +124,39 @@ class _MapPageState extends State<MapPage> {
     bool needsPermission = await LocationService.needsLocationPermission();
     if (needsPermission) {
       await LocationService.requestPermission();
+    }
+  }
+
+  /// 現在位置を初期位置として設定
+  Future<void> _initializeCurrentLocation() async {
+    try {
+      // 位置情報の許可を確認
+      bool needsPermission = await LocationService.needsLocationPermission();
+      if (needsPermission) {
+        return; // 許可がなければ初期位置のまま
+      }
+
+      // 位置情報サービスが有効かチェック
+      bool isLocationEnabled = await LocationService.isLocationServiceEnabled();
+      if (!isLocationEnabled) {
+        return; // サービスが無効なら初期位置のまま
+      }
+
+      // 現在位置を取得
+      final currentLocation = await LocationService.getCurrentLatLng();
+      if (currentLocation != null && _mapController != null) {
+        // 地図を現在位置に移動
+        _mapController!.animateCamera(
+          CameraUpdate.newCameraPosition(
+            CameraPosition(
+              target: currentLocation,
+              zoom: 15.0,
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      // エラーが発生した場合は初期位置のまま
     }
   }
 
@@ -275,52 +308,52 @@ class _MapPageState extends State<MapPage> {
     await _loadPins();
   }
 
-  /// 現在位置に移動
+  /// 現在位置に移動（ズームレベル18で）
   Future<void> _goToCurrentLocation() async {
-    // 位置情報の許可を確認
-    bool needsPermission = await LocationService.needsLocationPermission();
-    if (needsPermission) {
-      // 許可を要求
-      PermissionStatus permission = await LocationService.requestPermission();
-      if (permission.isDenied || permission.isPermanentlyDenied) {
-        // 許可が拒否された場合
+    try {
+      // 位置情報の許可を確認
+      bool needsPermission = await LocationService.needsLocationPermission();
+      if (needsPermission) {
+        // 許可を要求
+        PermissionStatus permission = await LocationService.requestPermission();
+        if (permission.isDenied || permission.isPermanentlyDenied) {
+          // 許可が拒否された場合
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('位置情報の許可が必要です。設定から許可してください。'),
+                duration: Duration(seconds: 3),
+              ),
+            );
+          }
+          return;
+        }
+      }
+
+      // 位置情報サービスが有効かチェック
+      bool isLocationEnabled = await LocationService.isLocationServiceEnabled();
+      if (!isLocationEnabled) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('位置情報の許可が必要です。設定から許可してください。'),
+              content: Text('位置情報サービスが無効です。設定から有効にしてください。'),
               duration: Duration(seconds: 3),
             ),
           );
         }
         return;
       }
-    }
 
-    // 位置情報サービスが有効かチェック
-    bool isLocationEnabled = await LocationService.isLocationServiceEnabled();
-    if (!isLocationEnabled) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('位置情報サービスが無効です。設定から有効にしてください。'),
-            duration: Duration(seconds: 3),
-          ),
-        );
-      }
-      return;
-    }
-
-    // 現在位置を取得して地図を移動
-    try {
       // 実際の現在位置を取得
       final currentLocation = await LocationService.getCurrentLatLng();
       
       if (currentLocation != null && _mapController != null) {
+        // 現在位置に移動（ズームレベル18）
         _mapController!.animateCamera(
           CameraUpdate.newCameraPosition(
             CameraPosition(
               target: currentLocation,
-              zoom: _currentLocationZoom, // 定数で定義されたズームレベル
+              zoom: 18.0, // 建物レベルのズーム
             ),
           ),
         );
@@ -328,7 +361,7 @@ class _MapPageState extends State<MapPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('現在位置に移動しました。地図の中心に配置し、詳細表示しています。'),
+              content: Text('現在位置に移動し、詳細表示にズームしました。'),
               duration: Duration(seconds: 2),
             ),
           );
@@ -347,13 +380,17 @@ class _MapPageState extends State<MapPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('現在位置の取得に失敗しました。'),
+            content: Text('現在位置の移動に失敗しました。'),
             duration: Duration(seconds: 2),
           ),
         );
       }
     }
   }
+
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -364,6 +401,11 @@ class _MapPageState extends State<MapPage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(l10n.appTitle),
         actions: [
+          IconButton(
+            onPressed: _goToCurrentLocation,
+            icon: const Icon(Icons.my_location),
+            tooltip: '現在位置に移動',
+          ),
           IconButton(
             onPressed: _toggleMapType,
             icon: Icon(_mapType == MapType.normal ? Icons.satellite : Icons.map),
@@ -401,6 +443,7 @@ class _MapPageState extends State<MapPage> {
                   myLocationEnabled: true,
                   myLocationButtonEnabled: false, // カスタムボタンを使用
                   zoomControlsEnabled: true, // ズームボタンを有効化
+
                 ),
                 // 左側のボタン群
                 Positioned(
@@ -420,13 +463,6 @@ class _MapPageState extends State<MapPage> {
                         tooltip: l10n.emailSend,
                         child: const Icon(Icons.email),
                         heroTag: 'email',
-                      ),
-                      const SizedBox(height: 16),
-                      FloatingActionButton(
-                        onPressed: _goToCurrentLocation,
-                        tooltip: l10n.returnToInitialPosition,
-                        child: const Icon(Icons.my_location),
-                        heroTag: 'location',
                       ),
                     ],
                   ),

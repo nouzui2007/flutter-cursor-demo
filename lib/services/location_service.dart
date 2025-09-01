@@ -26,25 +26,26 @@ class LocationService {
 
   /// 位置情報サービスが有効かどうかを確認
   static Future<bool> isLocationServiceEnabled() async {
-    // 実際の実装では、プラットフォーム固有のコードが必要
-    // ここでは簡易的に許可状態で判断
+    // 許可状態で判断（簡易的な実装）
     PermissionStatus status = await checkPermission();
     return status.isGranted;
   }
 
-  /// 現在位置を取得（テスト用の固定値）
-  /// 実際の実装では、geolocatorパッケージを使用
+  /// 現在位置を取得
+  /// 注意: このメソッドは実際の位置情報を返しません
+  /// Google MapsのmyLocationEnabledを使用して現在位置を表示してください
   static Future<LatLng?> getCurrentLatLng() async {
-    // テスト用の固定位置（東京）
-    // 実際の実装では以下のように実装：
-    // try {
-    //   final position = await Geolocator.getCurrentPosition(
-    //     desiredAccuracy: LocationAccuracy.high,
-    //   );
-    //   return LatLng(position.latitude, position.longitude);
-    // } catch (e) {
-    //   return null;
-    // }
+    // 実際の実装では、プラットフォーム固有の位置情報取得APIを使用
+    // または、Google Mapsの現在位置機能を活用
+    
+    // 現在は固定位置（東京）を返す
+    // 実際のアプリでは、Google Mapsの現在位置ボタンを使用することを推奨
     return const LatLng(35.6762, 139.6503);
+  }
+
+  /// 位置情報の許可状態をチェック（Google Maps用）
+  static Future<bool> isLocationPermissionGranted() async {
+    PermissionStatus status = await checkPermission();
+    return status.isGranted;
   }
 }
