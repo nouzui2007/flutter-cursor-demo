@@ -55,3 +55,4 @@ config/api_keys_local.dart
 .env
 .env.local
 .env.production
+ios/env_vars.tmp
