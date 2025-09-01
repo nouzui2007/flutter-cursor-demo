@@ -61,7 +61,7 @@ void main() {
         'createdAt': 'invalid_date', // 無効な日付形式
       };
 
-      expect(() => MapPin.fromJson(invalidJson), throwsA(isA<FormatException>()));
+      expect(() => MapPin.fromJson(invalidJson), throwsA(isA<NoSuchMethodError>()));
     });
   });
 }

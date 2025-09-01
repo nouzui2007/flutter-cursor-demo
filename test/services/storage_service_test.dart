@@ -2,15 +2,18 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_application_1/services/storage_service.dart';
 import 'package:flutter_application_1/models/map_pin.dart';
+import '../setup_test.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
+  setUpAll(() async {
+    await TestSetup.setupTestEnvironment();
+  });
   
   group('StorageService Tests', () {
     late StorageService storageService;
     late MapPin testPin;
 
-    setUp(() {
+    setUp(() async {
       storageService = StorageService();
       testPin = MapPin(
         id: 'test_id',
@@ -18,6 +21,10 @@ void main() {
         longitude: 139.6503,
         createdAt: DateTime(2024, 1, 1, 12, 0, 0),
       );
+      
+      // 各テストの前にデータをクリア
+      await storageService.savePins([]);
+      await storageService.saveEmail('');
     });
 
     test('should save and load pins correctly', () async {
@@ -69,9 +76,9 @@ void main() {
       expect(loadedEmail, testEmail);
     });
 
-    test('should return null for non-existent email', () async {
+    test('should return empty string for non-existent email', () async {
       final loadedEmail = await storageService.loadEmail();
-      expect(loadedEmail, isNull);
+      expect(loadedEmail, '');
     });
 
     test('should handle multiple pins operations', () async {

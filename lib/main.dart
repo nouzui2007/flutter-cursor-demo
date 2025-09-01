@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'l10n/app_localizations.dart';
 import 'models/map_pin.dart';
 import 'services/storage_service.dart';
+import 'services/location_service.dart';
 import 'widgets/email_dialog.dart';
 import 'screens/pin_list_screen.dart';
+import 'screens/home_screen.dart';
+import 'screens/api_connection_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -32,7 +36,54 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MapPage(),
+      home: const MainNavigationScreen(),
+    );
+  }
+}
+
+class MainNavigationScreen extends StatefulWidget {
+  const MainNavigationScreen({super.key});
+
+  @override
+  State<MainNavigationScreen> createState() => _MainNavigationScreenState();
+}
+
+class _MainNavigationScreenState extends State<MainNavigationScreen> {
+  int _currentIndex = 0;
+
+  final List<Widget> _screens = [
+    const HomeScreen(),
+    const MapPage(),
+    const ApiConnectionScreen(),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _screens[_currentIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        type: BottomNavigationBarType.fixed,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'ホーム',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.map),
+            label: '地図',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.api),
+            label: 'API接続',
+          ),
+        ],
+      ),
     );
   }
 }
@@ -52,16 +103,28 @@ class _MapPageState extends State<MapPage> {
   MapType _mapType = MapType.normal;
   bool _isLoading = true;
 
-  // 初期位置（東京）
+  // 初期位置（現在位置 - 東京）
   static const CameraPosition _initialPosition = CameraPosition(
     target: LatLng(35.6762, 139.6503),
-    zoom: 10.0,
+    zoom: 15.0, // 街路レベルのズーム
   );
+
+  // 現在位置表示時のズームレベル
+  static const double _currentLocationZoom = 18.0; // 建物レベルのズーム
 
   @override
   void initState() {
     super.initState();
     _loadPins();
+    _requestLocationPermission();
+  }
+
+  /// 位置情報の許可を要求
+  Future<void> _requestLocationPermission() async {
+    bool needsPermission = await LocationService.needsLocationPermission();
+    if (needsPermission) {
+      await LocationService.requestPermission();
+    }
   }
 
   Future<void> _loadPins() async {
@@ -212,6 +275,86 @@ class _MapPageState extends State<MapPage> {
     await _loadPins();
   }
 
+  /// 現在位置に移動
+  Future<void> _goToCurrentLocation() async {
+    // 位置情報の許可を確認
+    bool needsPermission = await LocationService.needsLocationPermission();
+    if (needsPermission) {
+      // 許可を要求
+      PermissionStatus permission = await LocationService.requestPermission();
+      if (permission.isDenied || permission.isPermanentlyDenied) {
+        // 許可が拒否された場合
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('位置情報の許可が必要です。設定から許可してください。'),
+              duration: Duration(seconds: 3),
+            ),
+          );
+        }
+        return;
+      }
+    }
+
+    // 位置情報サービスが有効かチェック
+    bool isLocationEnabled = await LocationService.isLocationServiceEnabled();
+    if (!isLocationEnabled) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('位置情報サービスが無効です。設定から有効にしてください。'),
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
+      return;
+    }
+
+    // 現在位置を取得して地図を移動
+    try {
+      // 実際の現在位置を取得
+      final currentLocation = await LocationService.getCurrentLatLng();
+      
+      if (currentLocation != null && _mapController != null) {
+        _mapController!.animateCamera(
+          CameraUpdate.newCameraPosition(
+            CameraPosition(
+              target: currentLocation,
+              zoom: _currentLocationZoom, // 定数で定義されたズームレベル
+            ),
+          ),
+        );
+        
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('現在位置に移動しました。地図の中心に配置し、詳細表示しています。'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('現在位置を取得できませんでした。'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('現在位置の取得に失敗しました。'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -280,13 +423,7 @@ class _MapPageState extends State<MapPage> {
                       ),
                       const SizedBox(height: 16),
                       FloatingActionButton(
-                        onPressed: () {
-                          if (_mapController != null) {
-                            _mapController!.animateCamera(
-                              CameraUpdate.newCameraPosition(_initialPosition),
-                            );
-                          }
-                        },
+                        onPressed: _goToCurrentLocation,
                         tooltip: l10n.returnToInitialPosition,
                         child: const Icon(Icons.my_location),
                         heroTag: 'location',
