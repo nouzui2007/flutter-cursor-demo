@@ -105,18 +105,77 @@ class _MapPageState extends State<MapPage> {
   MapType _mapType = MapType.normal;
   bool _isLoading = true;
 
-  // 初期位置（デフォルトは東京、現在位置取得後に更新）
-  static const CameraPosition _initialPosition = CameraPosition(
-    target: LatLng(35.6762, 139.6503),
-    zoom: 15.0, // 街路レベルのズーム
-  );
+  // 初期位置（現在位置を動的に取得）
+  CameraPosition? _initialPosition;
 
   @override
   void initState() {
     super.initState();
-    _loadPins();
-    _requestLocationPermission();
-    _initializeCurrentLocation();
+    _initializeMap();
+  }
+
+  /// 地図の初期化（位置情報取得完了まで待つ）
+  Future<void> _initializeMap() async {
+    try {
+      // 位置情報の許可を要求
+      await _requestLocationPermission();
+      
+      // 現在位置を取得して初期位置として設定
+      await _initializeInitialPosition();
+      
+      // ピンデータを読み込み
+      await _loadPins();
+      
+      // ローディング状態を解除
+      setState(() {
+        _isLoading = false;
+      });
+      
+      // 現在位置の初期化（必要に応じて）
+      _initializeCurrentLocation();
+    } catch (e) {
+      // エラーが発生した場合でも地図は表示する
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  /// 初期位置を設定
+  Future<void> _initializeInitialPosition() async {
+    int retryCount = 0;
+    const maxRetries = 3;
+    
+    while (retryCount < maxRetries) {
+      try {
+        // 現在位置を取得して初期位置として設定
+        final currentLocation = await LocationService.getCurrentLatLng();
+        if (currentLocation != null) {
+          _initialPosition = CameraPosition(
+            target: currentLocation,
+            zoom: 15.0, // 街路レベルのズーム
+          );
+          return; // 成功したら終了
+        }
+        
+        // 位置情報が取得できない場合は少し待ってから再試行
+        retryCount++;
+        if (retryCount < maxRetries) {
+          await Future.delayed(Duration(seconds: 2 * retryCount)); // 指数バックオフ
+        }
+      } catch (e) {
+        retryCount++;
+        if (retryCount < maxRetries) {
+          await Future.delayed(Duration(seconds: 2 * retryCount));
+        }
+      }
+    }
+    
+    // 最大試行回数に達した場合はデフォルト位置
+    _initialPosition = const CameraPosition(
+      target: LatLng(35.0, 135.0),
+      zoom: 8.0, // より広い範囲
+    );
   }
 
   /// 位置情報の許可を要求
@@ -127,7 +186,7 @@ class _MapPageState extends State<MapPage> {
     }
   }
 
-  /// 現在位置を初期位置として設定
+  /// 現在位置に移動（初期位置が現在位置と異なる場合のみ）
   Future<void> _initializeCurrentLocation() async {
     try {
       // 位置情報の許可を確認
@@ -145,15 +204,19 @@ class _MapPageState extends State<MapPage> {
       // 現在位置を取得
       final currentLocation = await LocationService.getCurrentLatLng();
       if (currentLocation != null && _mapController != null) {
-        // 地図を現在位置に移動
-        _mapController!.animateCamera(
-          CameraUpdate.newCameraPosition(
-            CameraPosition(
-              target: currentLocation,
-              zoom: 15.0,
+        // 初期位置と現在位置が異なる場合のみ移動
+        if (_initialPosition != null &&
+            (_initialPosition!.target.latitude != currentLocation.latitude ||
+             _initialPosition!.target.longitude != currentLocation.longitude)) {
+          _mapController!.animateCamera(
+            CameraUpdate.newCameraPosition(
+              CameraPosition(
+                target: currentLocation,
+                zoom: 15.0,
+              ),
             ),
-          ),
-        );
+          );
+        }
       }
     } catch (e) {
       // エラーが発生した場合は初期位置のまま
@@ -167,12 +230,9 @@ class _MapPageState extends State<MapPage> {
         _pins.clear();
         _pins.addAll(pins);
         _updateMarkers();
-        _isLoading = false;
       });
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
+      // エラーが発生した場合は空のリストのまま
     }
   }
 
@@ -425,8 +485,10 @@ class _MapPageState extends State<MapPage> {
                 children: [
                   CircularProgressIndicator(),
                   SizedBox(height: 16),
-                  Text('地図を読み込み中...'),
-                  Text('（APIキーの設定を確認してください）'),
+                  Text('位置情報を取得中...'),
+                  Text('現在位置を取得してから地図を表示します'),
+                  SizedBox(height: 8),
+                  Text('（最大30秒程度かかる場合があります）'),
                 ],
               ),
             )
@@ -436,7 +498,10 @@ class _MapPageState extends State<MapPage> {
                   onMapCreated: (GoogleMapController controller) {
                     _mapController = controller;
                   },
-                  initialCameraPosition: _initialPosition,
+                  initialCameraPosition: _initialPosition ?? const CameraPosition(
+                    target: LatLng(35.0, 135.0),
+                    zoom: 8.0,
+                  ),
                   mapType: _mapType,
                   markers: _markers,
                   onTap: _onMapTap,

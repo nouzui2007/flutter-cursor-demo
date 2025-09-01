@@ -18,10 +18,16 @@ class EmailService {
     );
 
     try {
+      // メールアプリが起動可能かチェック
       if (await canLaunchUrl(emailUri)) {
-        final result = await launchUrl(emailUri);
+        // メールアプリを起動
+        final result = await launchUrl(
+          emailUri,
+          mode: LaunchMode.externalApplication,
+        );
+        
         if (!result) {
-          throw Exception('メールアプリの起動に失敗しました');
+          throw Exception('メールアプリの起動に失敗しました。デバイスの設定を確認してください。');
         }
       } else {
         throw Exception('メールアプリを起動できませんでした。デバイスにメールアプリがインストールされているか確認してください。');

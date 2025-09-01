@@ -1,14 +1,6 @@
-# Flutter Map Pin Manager
+# Flutter Map Application
 
-地図上でピンを管理し、メール送信機能を持つFlutterアプリケーションです。
-
-## 機能
-
-- Google Mapsを使用した地図表示
-- 地図上でのピンの追加・削除
-- ピンリストの表示と管理
-- ピンデータのメール送信
-- 日本語・英語の国際化対応
+地図上でピンを管理し、位置情報を活用するFlutterアプリケーションです。
 
 ## セットアップ
 
@@ -18,67 +10,55 @@
 flutter pub get
 ```
 
-### 2. Google Maps APIキーの設定
+### 2. APIキーの設定
 
-#### 方法1: 自動設定（推奨）
-
-1. `.env`ファイルを作成し、以下の内容でAPIキーを設定：
-   ```
-   GOOGLE_MAPS_API_KEY=your_actual_api_key_here
-   ```
-2. スクリプトを実行してAPIキーを適用：
-   ```bash
-   ./scripts/apply_api_keys.sh
-   ```
-
-#### 方法2: 手動設定
-
-1. 以下のファイルを手動で更新：
-   - `android/app/src/main/AndroidManifest.xml`
-   - `ios/Runner/AppDelegate.swift`
-2. `YOUR_GOOGLE_MAPS_API_KEY_HERE`を実際のAPIキーに置換
-
-**注意**: `.env`ファイルは`.gitignore`に含まれているため、リモートリポジトリに送信されません。
-
-### 3. アプリのビルド
+#### Android
+1. `android/app/build.gradle`の`manifestPlaceholders`を確認
+2. 環境変数`GOOGLE_MAPS_API_KEY`を設定するか、直接値を設定
 
 ```bash
-# Android
-flutter build apk --debug
-
-# iOS
-flutter build ios --debug
+export GOOGLE_MAPS_API_KEY="your_actual_api_key_here"
 ```
 
-## 使用方法
+#### iOS
+1. `ios/Runner/Info.plist`の`GOOGLE_MAPS_API_KEY`を実際のAPIキーに変更
+2. または、Xcodeで環境変数を設定
 
-1. **ピンの追加**: 地図をタップ
-2. **ピンの確認**: ピンをタップして詳細表示
-3. **ピンの削除**: ピン詳細ダイアログまたはピンリストから削除
-4. **地図タイプ切り替え**: アプリバーの地図アイコン
-5. **メール送信**: アプリバーのメールアイコンまたはフローティングアクションボタン
-6. **ピンリスト表示**: 左側のリストアイコンボタン
-
-## 開発
-
-### テストの実行
+### 3. アプリの実行
 
 ```bash
-flutter test
+# デバッグモードで実行
+flutter run
+
+# 特定のデバイスで実行
+flutter run -d <device_id>
 ```
 
-### コード分析
+## 機能
 
-```bash
-flutter analyze
-```
+- 🗺️ Google Maps統合
+- 📍 現在位置の表示
+- 📌 カスタムピンの管理
+- 📧 ピンデータのメール送信
+- 🏠 お知らせ表示
+- 🔌 API接続機能
 
 ## 注意事項
 
-- `config/api_keys.dart`ファイルには実際のAPIキーが含まれています
-- このファイルは`.gitignore`に含まれており、Gitにコミットされません
-- 本番環境では適切な環境変数管理を使用してください
+- `config/api_keys.dart`ファイルはGitにコミットしないでください
+- 実際のAPIキーは環境変数や設定ファイルで管理してください
+- 本番環境では適切なセキュリティ対策を実施してください
 
-## ライセンス
+## トラブルシューティング
 
-このプロジェクトはMITライセンスの下で公開されています。
+### メールアプリが起動しない
+- AndroidManifest.xmlのクエリ権限を確認
+- デバイスにメールアプリがインストールされているか確認
+
+### 地図が表示されない
+- Google Maps APIキーが正しく設定されているか確認
+- インターネット接続を確認
+
+### 位置情報が取得できない
+- 位置情報の許可を確認
+- 位置情報サービスが有効か確認

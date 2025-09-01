@@ -1,51 +1,79 @@
-import 'package:permission_handler/permission_handler.dart';
+import 'package:permission_handler/permission_handler.dart' as permission_handler;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
 
 class LocationService {
+  static final Location _location = Location();
+
   /// 位置情報の許可状態を確認
-  static Future<PermissionStatus> checkPermission() async {
-    return await Permission.location.status;
+  static Future<permission_handler.PermissionStatus> checkPermission() async {
+    return await permission_handler.Permission.location.status;
   }
 
   /// 位置情報の許可を要求
-  static Future<PermissionStatus> requestPermission() async {
-    return await Permission.location.request();
+  static Future<permission_handler.PermissionStatus> requestPermission() async {
+    return await permission_handler.Permission.location.request();
   }
 
   /// 位置情報の許可が必要かどうかを確認
   static Future<bool> needsLocationPermission() async {
-    PermissionStatus status = await checkPermission();
+    permission_handler.PermissionStatus status = await checkPermission();
     return status.isDenied || status.isRestricted;
   }
 
   /// 位置情報の許可が永続的に拒否されているかどうかを確認
   static Future<bool> isPermanentlyDenied() async {
-    PermissionStatus status = await checkPermission();
+    permission_handler.PermissionStatus status = await checkPermission();
     return status.isPermanentlyDenied;
   }
 
   /// 位置情報サービスが有効かどうかを確認
   static Future<bool> isLocationServiceEnabled() async {
-    // 許可状態で判断（簡易的な実装）
-    PermissionStatus status = await checkPermission();
-    return status.isGranted;
+    try {
+      bool serviceEnabled = await _location.serviceEnabled();
+      return serviceEnabled;
+    } catch (e) {
+      return false;
+    }
   }
 
   /// 現在位置を取得
-  /// 注意: このメソッドは実際の位置情報を返しません
-  /// Google MapsのmyLocationEnabledを使用して現在位置を表示してください
   static Future<LatLng?> getCurrentLatLng() async {
-    // 実際の実装では、プラットフォーム固有の位置情報取得APIを使用
-    // または、Google Mapsの現在位置機能を活用
-    
-    // 現在は固定位置（東京）を返す
-    // 実際のアプリでは、Google Mapsの現在位置ボタンを使用することを推奨
-    return const LatLng(35.6762, 139.6503);
+    try {
+      // 位置情報の許可状態を確認
+      permission_handler.PermissionStatus permissionStatus = await checkPermission();
+      
+      if (permissionStatus.isDenied) {
+        // 許可が拒否されている場合は許可を要求
+        permissionStatus = await requestPermission();
+        if (permissionStatus.isDenied) {
+          return null; // 許可が拒否された
+        }
+      }
+      
+      if (permissionStatus.isPermanentlyDenied) {
+        return null; // 永続的に拒否された
+      }
+      
+      // 位置情報サービスが有効かチェック
+      bool serviceEnabled = await _location.serviceEnabled();
+      if (!serviceEnabled) {
+        return null; // 位置情報サービスが無効
+      }
+      
+      // 現在位置を取得
+      LocationData locationData = await _location.getLocation();
+      
+      return LatLng(locationData.latitude!, locationData.longitude!);
+    } catch (e) {
+      print('位置情報の取得に失敗: $e');
+      return null;
+    }
   }
 
   /// 位置情報の許可状態をチェック（Google Maps用）
   static Future<bool> isLocationPermissionGranted() async {
-    PermissionStatus status = await checkPermission();
+    permission_handler.PermissionStatus status = await checkPermission();
     return status.isGranted;
   }
 }

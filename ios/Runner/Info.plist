@@ -49,5 +49,7 @@
 	<string>このアプリは地図上で現在位置を表示し、ピンの位置を管理するために位置情報を使用します。</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>このアプリは地図上で現在位置を表示し、ピンの位置を管理するために位置情報を使用します。</string>
+	<key>GOOGLE_MAPS_API_KEY</key>
+	<string>YOUR_GOOGLE_MAPS_API_KEY_HERE</string>
 </dict>
 </plist>

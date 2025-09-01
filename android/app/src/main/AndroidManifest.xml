@@ -3,6 +3,14 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     
+    <!-- メールアプリ起動のためのクエリ権限 -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.SENDTO" />
+            <data android:scheme="mailto" />
+        </intent>
+    </queries>
+    
     <application
         android:label="flutter_application_1"
         android:name="${applicationName}"
@@ -36,6 +44,6 @@
         <!-- Google Maps APIキー -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyA9Q-YS0bDGTCbptjTmiEAPsLay4mSQVeg" />
+            android:value="${GOOGLE_MAPS_API_KEY}" />
     </application>
 </manifest>
