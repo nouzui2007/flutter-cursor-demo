@@ -37,6 +37,7 @@ dependencies:
   shared_preferences: ^2.2.2
   url_launcher: ^6.2.4
   permission_handler: ^10.4.5
+  location: ^6.0.0
   http: ^1.1.0
 
 
