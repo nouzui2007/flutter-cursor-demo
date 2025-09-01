@@ -12,17 +12,24 @@ flutter pub get
 
 ### 2. APIキーの設定
 
-#### Android
-1. `android/app/build.gradle`の`manifestPlaceholders`を確認
-2. 環境変数`GOOGLE_MAPS_API_KEY`を設定するか、直接値を設定
+1. `.env.sample`をコピーして`.env`ファイルを作成
+2. `.env`ファイルにGoogle Maps APIキーを設定
 
 ```bash
-export GOOGLE_MAPS_API_KEY="your_actual_api_key_here"
+# .env.sampleをコピー
+cp .env.sample .env
+
+# .envファイルを編集してAPIキーを設定
+# GOOGLE_MAPS_API_KEY=your_actual_api_key_here
 ```
 
-#### iOS
-1. `ios/Runner/Info.plist`の`GOOGLE_MAPS_API_KEY`を実際のAPIキーに変更
-2. または、Xcodeで環境変数を設定
+#### iOS用の追加設定
+iOSビルド前に以下のスクリプトを実行してください：
+
+```bash
+# .envファイルからInfo.plistにAPIキーを設定
+./ios/scripts/load_env.sh
+```
 
 ### 3. アプリの実行
 
@@ -45,9 +52,10 @@ flutter run -d <device_id>
 
 ## 注意事項
 
-- `config/api_keys.dart`ファイルはGitにコミットしないでください
-- 実際のAPIキーは環境変数や設定ファイルで管理してください
+- `.env`ファイルはGitにコミットしないでください（`.gitignore`に含まれています）
+- 実際のAPIキーは`.env`ファイルで管理してください
 - 本番環境では適切なセキュリティ対策を実施してください
+- iOS開発時は`./ios/scripts/load_env.sh`を実行してAPIキーを設定してください
 
 ## トラブルシューティング
 
