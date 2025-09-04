@@ -56,3 +56,5 @@ config/api_keys_local.dart
 .env.local
 .env.production
 ios/env_vars.tmp
+# iOS Info.plist with API keys (temporary files)
+ios/Runner/Info.plist.tmp
