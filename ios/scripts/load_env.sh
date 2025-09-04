@@ -14,16 +14,21 @@ PLACEHOLDER="YOUR_GOOGLE_MAPS_API_KEY_HERE"
 
 echo "Loading environment variables from: $ENV_FILE"
 
-# ビルド終了時のクリーンアップ関数
+# ビルド終了時のクリーンアップ関数（ビルド完了後のみ実行）
 cleanup() {
-    echo "🔄 Restoring Info.plist to placeholder value..."
-    if [ -f "$INFO_PLIST" ]; then
-        /usr/libexec/PlistBuddy -c "Set :GOOGLE_MAPS_API_KEY $PLACEHOLDER" "$INFO_PLIST"
-        echo "✅ Restored Info.plist to placeholder"
+    # ビルドが完了している場合のみクリーンアップを実行
+    if [ "$CONFIGURATION" = "Release" ] || [ "$EFFECTIVE_PLATFORM_NAME" = "iphoneos" ]; then
+        echo "🔄 Build completed, restoring Info.plist to placeholder value..."
+        if [ -f "$INFO_PLIST" ]; then
+            /usr/libexec/PlistBuddy -c "Set :GOOGLE_MAPS_API_KEY $PLACEHOLDER" "$INFO_PLIST"
+            echo "✅ Restored Info.plist to placeholder"
+        fi
+    else
+        echo "ℹ️  Debug build - keeping API key for development"
     fi
 }
 
-# スクリプト終了時にクリーンアップを実行
+# スクリプト終了時にクリーンアップを実行（条件付き）
 trap cleanup EXIT
 
 if [ -f "$ENV_FILE" ]; then
