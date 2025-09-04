@@ -25,22 +25,16 @@
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>GOOGLE_MAPS_API_KEY</key>
-	<string>AIzaSyA9Q-YS0bDGTCbptjTmiEAPsLay4mSQVeg</string>
+	<string>YOUR_GOOGLE_MAPS_API_KEY_HERE</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>このアプリは地図上で現在位置を表示し、ピンの位置を管理するために位置情報を使用します。位置情報は地図の表示とピンの追加・管理にのみ使用され、他の目的には使用されません。</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>このアプリは地図上で現在位置を表示し、ピンの位置を管理するために位置情報を使用します。位置情報は地図の表示とピンの追加・管理にのみ使用され、他の目的には使用されません。</string>
-	<key>NSLocationUsageDescription</key>
-	<string>このアプリは地図上で現在位置を表示し、ピンの位置を管理するために位置情報を使用します。</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 		<key>NSExceptionDomains</key>
 		<dict>
-			<key>googleapis.com</key>
+			<key>google.com</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
@@ -49,7 +43,7 @@
 				<key>NSIncludesSubdomains</key>
 				<true/>
 			</dict>
-			<key>google.com</key>
+			<key>googleapis.com</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
@@ -60,6 +54,12 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>このアプリは地図上で現在位置を表示し、ピンの位置を管理するために位置情報を使用します。位置情報は地図の表示とピンの追加・管理にのみ使用され、他の目的には使用されません。</string>
+	<key>NSLocationUsageDescription</key>
+	<string>このアプリは地図上で現在位置を表示し、ピンの位置を管理するために位置情報を使用します。</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>このアプリは地図上で現在位置を表示し、ピンの位置を管理するために位置情報を使用します。位置情報は地図の表示とピンの追加・管理にのみ使用され、他の目的には使用されません。</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
