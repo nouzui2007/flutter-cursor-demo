@@ -508,7 +508,6 @@ class _MapPageState extends State<MapPage> {
                   myLocationEnabled: true,
                   myLocationButtonEnabled: false, // カスタムボタンを使用
                   zoomControlsEnabled: true, // ズームボタンを有効化
-
                 ),
                 // 左側のボタン群
                 Positioned(
@@ -519,15 +518,15 @@ class _MapPageState extends State<MapPage> {
                       FloatingActionButton(
                         onPressed: _showPinList,
                         tooltip: 'ピンリスト',
-                        child: const Icon(Icons.list),
                         heroTag: 'pinList',
+                        child: const Icon(Icons.list),
                       ),
                       const SizedBox(height: 16),
                       FloatingActionButton(
                         onPressed: _showEmailDialog,
                         tooltip: l10n.emailSend,
-                        child: const Icon(Icons.email),
                         heroTag: 'email',
+                        child: const Icon(Icons.email),
                       ),
                     ],
                   ),

@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_application_1/services/storage_service.dart';
 import 'package:flutter_application_1/models/map_pin.dart';
 import '../setup_test.dart';

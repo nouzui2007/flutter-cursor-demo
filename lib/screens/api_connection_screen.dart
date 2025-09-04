@@ -145,7 +145,7 @@ class _ApiConnectionScreenState extends State<ApiConnectionScreen> {
                               value: category,
                               child: Text(category),
                             ))
-                        .toList(),
+                        ,
                   ],
                   onChanged: (value) {
                     _selectedCategory = value ?? '';

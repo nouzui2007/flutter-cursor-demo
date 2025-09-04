@@ -52,7 +52,7 @@ class _EmailDialogState extends State<EmailDialog> {
 
     try {
       final email = _emailController.text.trim();
-      final subject = '地図ピンデータ';
+      const subject = '地図ピンデータ';
       
       List<MapPin> pinsToSend;
       if (_selectedOption == 'new') {
