@@ -40,33 +40,51 @@ class LocationService {
   /// 現在位置を取得
   static Future<LatLng?> getCurrentLatLng() async {
     try {
+      print('🔍 LocationService: 現在位置取得を開始...');
+      
       // 位置情報の許可状態を確認
       permission_handler.PermissionStatus permissionStatus = await checkPermission();
+      print('📋 LocationService: 許可状態: $permissionStatus');
       
       if (permissionStatus.isDenied) {
+        print('⚠️ LocationService: 許可が拒否されています。許可を要求します...');
         // 許可が拒否されている場合は許可を要求
         permissionStatus = await requestPermission();
+        print('📋 LocationService: 許可要求後の状態: $permissionStatus');
         if (permissionStatus.isDenied) {
+          print('❌ LocationService: 許可が拒否されました');
           return null; // 許可が拒否された
         }
       }
       
       if (permissionStatus.isPermanentlyDenied) {
+        print('❌ LocationService: 永続的に拒否されています');
         return null; // 永続的に拒否された
       }
       
       // 位置情報サービスが有効かチェック
       bool serviceEnabled = await _location.serviceEnabled();
+      print('📍 LocationService: 位置情報サービス有効: $serviceEnabled');
       if (!serviceEnabled) {
+        print('❌ LocationService: 位置情報サービスが無効です');
         return null; // 位置情報サービスが無効
       }
       
       // 現在位置を取得
+      print('🎯 LocationService: 位置データを取得中...');
       LocationData locationData = await _location.getLocation();
+      print('📍 LocationService: 取得した位置データ: lat=${locationData.latitude}, lng=${locationData.longitude}');
       
-      return LatLng(locationData.latitude!, locationData.longitude!);
+      if (locationData.latitude != null && locationData.longitude != null) {
+        LatLng result = LatLng(locationData.latitude!, locationData.longitude!);
+        print('✅ LocationService: 位置情報取得成功: $result');
+        return result;
+      } else {
+        print('❌ LocationService: 位置データがnullです');
+        return null;
+      }
     } catch (e) {
-      print('位置情報の取得に失敗: $e');
+      print('❌ LocationService: 位置情報の取得に失敗: $e');
       return null;
     }
   }

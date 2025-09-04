@@ -216,8 +216,12 @@ class _MapPageState extends State<MapPage> {
 
   /// 直接許可を要求
   Future<void> _requestPermissionDirectly() async {
+    print('🔍 直接許可を要求中...');
     PermissionStatus permission = await LocationService.requestPermission();
+    print('📋 許可要求結果: $permission');
+    
     if (permission.isDenied || permission.isPermanentlyDenied) {
+      print('❌ 位置情報の許可が拒否されました');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -226,31 +230,49 @@ class _MapPageState extends State<MapPage> {
           ),
         );
       }
+    } else if (permission.isGranted) {
+      print('✅ 位置情報の許可が取得されました');
+      // 許可が取得されたら現在位置を再試行
+      _initializeCurrentLocation();
     }
   }
 
   /// 現在位置に移動（初期位置が現在位置と異なる場合のみ）
   Future<void> _initializeCurrentLocation() async {
     try {
+      print('🔍 現在位置の初期化を開始...');
+      
       // 位置情報の許可を確認
       bool needsPermission = await LocationService.needsLocationPermission();
+      print('📋 位置情報許可が必要: $needsPermission');
+      
       if (needsPermission) {
+        print('❌ 位置情報の許可がありません');
         return; // 許可がなければ初期位置のまま
       }
 
       // 位置情報サービスが有効かチェック
       bool isLocationEnabled = await LocationService.isLocationServiceEnabled();
+      print('📍 位置情報サービス有効: $isLocationEnabled');
+      
       if (!isLocationEnabled) {
+        print('❌ 位置情報サービスが無効です');
         return; // サービスが無効なら初期位置のまま
       }
 
       // 現在位置を取得
+      print('🎯 現在位置を取得中...');
       final currentLocation = await LocationService.getCurrentLatLng();
+      print('📍 取得した位置: $currentLocation');
+      
       if (currentLocation != null && _mapController != null) {
+        print('✅ 現在位置を取得しました: ${currentLocation.latitude}, ${currentLocation.longitude}');
+        
         // 初期位置と現在位置が異なる場合のみ移動
         if (_initialPosition != null &&
             (_initialPosition!.target.latitude != currentLocation.latitude ||
              _initialPosition!.target.longitude != currentLocation.longitude)) {
+          print('🗺️ 地図を現在位置に移動中...');
           _mapController!.animateCamera(
             CameraUpdate.newCameraPosition(
               CameraPosition(
@@ -259,10 +281,20 @@ class _MapPageState extends State<MapPage> {
               ),
             ),
           );
+        } else {
+          print('ℹ️ 初期位置と現在位置が同じです');
+        }
+      } else {
+        print('❌ 現在位置の取得に失敗しました');
+        if (currentLocation == null) {
+          print('❌ currentLocation が null です');
+        }
+        if (_mapController == null) {
+          print('❌ _mapController が null です');
         }
       }
     } catch (e) {
-      // エラーが発生した場合は初期位置のまま
+      print('❌ 現在位置の初期化でエラーが発生: $e');
     }
   }
 
