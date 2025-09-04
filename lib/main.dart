@@ -182,7 +182,50 @@ class _MapPageState extends State<MapPage> {
   Future<void> _requestLocationPermission() async {
     bool needsPermission = await LocationService.needsLocationPermission();
     if (needsPermission) {
-      await LocationService.requestPermission();
+      // ユーザーに許可の理由を説明
+      if (mounted) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => AlertDialog(
+            title: const Text('位置情報の許可'),
+            content: const Text(
+              'このアプリは地図上で現在位置を表示し、ピンの位置を管理するために位置情報を使用します。\n\n'
+              '位置情報は地図の表示とピンの追加・管理にのみ使用され、他の目的には使用されません。',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _requestPermissionDirectly();
+                },
+                child: const Text('許可する'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('後で'),
+              ),
+            ],
+          ),
+        );
+      }
+    }
+  }
+
+  /// 直接許可を要求
+  Future<void> _requestPermissionDirectly() async {
+    PermissionStatus permission = await LocationService.requestPermission();
+    if (permission.isDenied || permission.isPermanentlyDenied) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('位置情報の許可が必要です。設定から許可してください。'),
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
     }
   }
 

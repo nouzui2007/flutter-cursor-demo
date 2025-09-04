@@ -3,7 +3,7 @@
 # .envファイルからAPIキーを読み込み、環境変数として設定するスクリプト
 # このスクリプトはXcodeのビルドフェーズで実行されます
 
-ENV_FILE="${SRCROOT}/../../.env"
+ENV_FILE="${SRCROOT}/../.env"
 
 echo "Loading environment variables from: $ENV_FILE"
 
