@@ -156,7 +156,7 @@ class _ClockTimePickerState extends State<ClockTimePicker> {
                     
                     // 数字ボタンを左にずらして、12と6が直線で結ばれるようにする
                     // 12と6の位置を調整して、時計の中心を通る垂直線に配置
-                    final offsetX = -20; // 左に20ピクセルずらす（より大きく調整）
+                    final offsetX = -30; // 左に30ピクセルずらす（12と6を中心線上に配置）
                     final adjustedX = x + offsetX;
                     
                     final isSelected = mode == ClockMode.hour
@@ -212,7 +212,7 @@ class _ClockTimePickerState extends State<ClockTimePicker> {
                       
                       // 数字ボタンを左にずらして、12と6が直線で結ばれるようにする
                       // 24と18の位置を調整して、時計の中心を通る垂直線に配置
-                      final offsetX = -20; // 左に20ピクセルずらす（より大きく調整）
+                      final offsetX = -30; // 左に30ピクセルずらす（24と18を中心線上に配置）
                       final adjustedX = x + offsetX;
                       
                       final isSelected = value == selectedHour;
