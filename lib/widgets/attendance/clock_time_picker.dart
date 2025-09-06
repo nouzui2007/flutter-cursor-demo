@@ -168,8 +168,8 @@ class _ClockTimePickerState extends State<ClockTimePicker> {
                         : [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
                     final value = numbers[index];
                     final angle = (index * math.pi * 2 / 12) - math.pi / 2;
-                    final x = 120 + math.cos(angle) * 100;
-                    final y = 120 + math.sin(angle) * 100;
+                    final x = 120 + math.cos(angle) * 80; // 半径を80に調整
+                    final y = 120 + math.sin(angle) * 80;
                     
                     final isSelected = mode == ClockMode.hour
                         ? value == selectedHour
@@ -313,14 +313,14 @@ class ClockPainter extends CustomPainter {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width / 2 - 20;
 
-    // 外周を描画
+    // 大きな外周円を描画（数字の外側）
     final outerPaint = Paint()
       ..color = Colors.grey.shade300
-      ..strokeWidth = 2
+      ..strokeWidth = 3
       ..style = PaintingStyle.stroke;
     canvas.drawCircle(center, radius, outerPaint);
 
-    // 数字を描画
+    // 数字の位置に小さな目盛りを描画
     final numbers = mode == ClockMode.hour 
         ? [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
         : [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
@@ -330,25 +330,22 @@ class ClockPainter extends CustomPainter {
       final x = center.dx + math.cos(angle) * (radius - 30);
       final y = center.dy + math.sin(angle) * (radius - 30);
 
-      final isSelected = mode == ClockMode.hour
-          ? numbers[i] == selectedHour
-          : numbers[i] == selectedMinute;
-
-      // 円を描画
-      final circlePaint = Paint()
-        ..color = isSelected ? Colors.blue : Colors.transparent
-        ..style = PaintingStyle.fill;
-      canvas.drawCircle(Offset(x, y), 16, circlePaint);
-
-      if (!isSelected) {
-        final borderPaint = Paint()
-          ..color = Colors.grey.shade400
-          ..strokeWidth = 1
-          ..style = PaintingStyle.stroke;
-        canvas.drawCircle(Offset(x, y), 16, borderPaint);
-      }
-
-      // テキストはStackの数字ボタンで表示するので、ここでは描画しない
+      // 小さな目盛りを描画
+      final tickPaint = Paint()
+        ..color = Colors.grey.shade400
+        ..strokeWidth = 2
+        ..style = PaintingStyle.stroke;
+      
+      final tickStartX = center.dx + math.cos(angle) * (radius - 40);
+      final tickStartY = center.dy + math.sin(angle) * (radius - 40);
+      final tickEndX = center.dx + math.cos(angle) * (radius - 20);
+      final tickEndY = center.dy + math.sin(angle) * (radius - 20);
+      
+      canvas.drawLine(
+        Offset(tickStartX, tickStartY),
+        Offset(tickEndX, tickEndY),
+        tickPaint,
+      );
     }
 
     // 中心点を描画
@@ -364,12 +361,12 @@ class ClockPainter extends CustomPainter {
 
     if (selectedIndex != -1) {
       final angle = (selectedIndex * math.pi * 2 / 12) - math.pi / 2;
-      final endX = center.dx + math.cos(angle) * (radius - 60);
-      final endY = center.dy + math.sin(angle) * (radius - 60);
+      final endX = center.dx + math.cos(angle) * (radius - 50);
+      final endY = center.dy + math.sin(angle) * (radius - 50);
 
       final handPaint = Paint()
-        ..color = Colors.blue
-        ..strokeWidth = 3
+        ..color = mode == ClockMode.hour ? Colors.blue : Colors.red
+        ..strokeWidth = 4
         ..strokeCap = StrokeCap.round;
       canvas.drawLine(center, Offset(endX, endY), handPaint);
     }
