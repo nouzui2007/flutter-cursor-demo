@@ -148,40 +148,71 @@ class _ClockTimePickerState extends State<ClockTimePicker> {
             SizedBox(
               width: 240,
               height: 240,
-              child: GestureDetector(
-                onTapDown: (details) {
-                  final RenderBox box = context.findRenderObject() as RenderBox;
-                  final localPosition = box.globalToLocal(details.globalPosition);
-                  final center = Offset(120, 120);
-                  final radius = 100;
-                  
-                  final dx = localPosition.dx - center.dx;
-                  final dy = localPosition.dy - center.dy;
-                  final distance = math.sqrt(dx * dx + dy * dy);
-                  
-                  if (distance <= radius) {
-                    final angle = math.atan2(dy, dx) + math.pi / 2;
-                    final normalizedAngle = (angle + 2 * math.pi) % (2 * math.pi);
-                    final index = (normalizedAngle * 12 / (2 * math.pi)).round() % 12;
-                    
-                    if (mode == ClockMode.hour) {
-                      final numbers = [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
-                      _handleHourTap(numbers[index]);
-                    } else {
-                      final numbers = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
-                      _handleMinuteTap(numbers[index]);
-                    }
-                  }
-                },
-                child: CustomPaint(
-                  painter: ClockPainter(
-                    selectedHour: selectedHour,
-                    selectedMinute: selectedMinute,
-                    mode: mode,
-                    onHourTap: _handleHourTap,
-                    onMinuteTap: _handleMinuteTap,
+              child: Stack(
+                children: [
+                  // 時計の描画
+                  CustomPaint(
+                    size: const Size(240, 240),
+                    painter: ClockPainter(
+                      selectedHour: selectedHour,
+                      selectedMinute: selectedMinute,
+                      mode: mode,
+                      onHourTap: _handleHourTap,
+                      onMinuteTap: _handleMinuteTap,
+                    ),
                   ),
-                ),
+                  // タップ可能な数字ボタン
+                  ...List.generate(12, (index) {
+                    final numbers = mode == ClockMode.hour 
+                        ? [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+                        : [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
+                    final value = numbers[index];
+                    final angle = (index * math.pi * 2 / 12) - math.pi / 2;
+                    final x = 120 + math.cos(angle) * 100;
+                    final y = 120 + math.sin(angle) * 100;
+                    
+                    final isSelected = mode == ClockMode.hour
+                        ? value == selectedHour
+                        : value == selectedMinute;
+                    
+                    return Positioned(
+                      left: x - 20,
+                      top: y - 20,
+                      child: GestureDetector(
+                        onTap: () {
+                          print('Tapped: $value (mode: $mode)');
+                          if (mode == ClockMode.hour) {
+                            _handleHourTap(value);
+                          } else {
+                            _handleMinuteTap(value);
+                          }
+                        },
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: isSelected ? Colors.blue : Colors.transparent,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: isSelected ? Colors.blue : Colors.grey.shade400,
+                              width: 2,
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              value.toString().padLeft(mode == ClockMode.minute ? 2 : 1, '0'),
+                              style: TextStyle(
+                                color: isSelected ? Colors.white : Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+                ],
               ),
             ),
             const SizedBox(height: 24),
@@ -317,23 +348,7 @@ class ClockPainter extends CustomPainter {
         canvas.drawCircle(Offset(x, y), 16, borderPaint);
       }
 
-      // テキストを描画
-      final textPainter = TextPainter(
-        text: TextSpan(
-          text: numbers[i].toString().padLeft(mode == ClockMode.minute ? 2 : 1, '0'),
-          style: TextStyle(
-            color: isSelected ? Colors.white : Colors.black,
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        textDirection: TextDirection.ltr,
-      );
-      textPainter.layout();
-      textPainter.paint(
-        canvas,
-        Offset(x - textPainter.width / 2, y - textPainter.height / 2),
-      );
+      // テキストはStackの数字ボタンで表示するので、ここでは描画しない
     }
 
     // 中心点を描画
