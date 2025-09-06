@@ -125,9 +125,13 @@ class _ClockTimePickerState extends State<ClockTimePicker> {
             ),
             const SizedBox(height: 24),
             // 時計
-            SizedBox(
+            Container(
               width: 350,
               height: 350,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100, // 薄いグレー背景
+                borderRadius: BorderRadius.circular(175), // 円形
+              ),
               child: Stack(
                 children: [
                   // 時計の描画
