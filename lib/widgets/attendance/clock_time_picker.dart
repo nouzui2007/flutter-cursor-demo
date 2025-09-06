@@ -147,9 +147,10 @@ class _ClockTimePickerState extends State<ClockTimePicker> {
                         ? [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
                         : [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
                     final value = numbers[index];
+                    // 12時の位置から時計回りに配置
                     final angle = (index * math.pi * 2 / 12) - math.pi / 2;
-                    final x = 150 + math.cos(angle) * 100; // 中心150, 半径100
-                    final y = 150 + math.sin(angle) * 100;
+                    final x = 150 + math.cos(angle) * 90; // 中心150, 半径90（内側に移動）
+                    final y = 150 + math.sin(angle) * 90;
                     
                     final isSelected = mode == ClockMode.hour
                         ? value == selectedHour
@@ -197,9 +198,10 @@ class _ClockTimePickerState extends State<ClockTimePicker> {
                     ...List.generate(12, (index) {
                       final numbers = [24, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
                       final value = numbers[index];
+                      // 12時の位置から時計回りに配置
                       final angle = (index * math.pi * 2 / 12) - math.pi / 2;
-                      final x = 150 + math.cos(angle) * 130; // 中心150, 半径130
-                      final y = 150 + math.sin(angle) * 130;
+                      final x = 150 + math.cos(angle) * 120; // 中心150, 半径120（内側に移動）
+                      final y = 150 + math.sin(angle) * 120;
                       
                       final isSelected = value == selectedHour;
                       
@@ -322,8 +324,8 @@ class ClockPainter extends CustomPainter {
       // 時間の針
       final hour12 = selectedHour == 0 ? 12 : (selectedHour > 12 ? selectedHour - 12 : selectedHour);
       final hourAngle = (hour12 - 1) * math.pi * 2 / 12 - math.pi / 2;
-      final hourEndX = center.dx + math.cos(hourAngle) * (radius - 80);
-      final hourEndY = center.dy + math.sin(hourAngle) * (radius - 80);
+      final hourEndX = center.dx + math.cos(hourAngle) * (radius - 100);
+      final hourEndY = center.dy + math.sin(hourAngle) * (radius - 100);
       
       final hourPaint = Paint()
         ..color = Colors.blue
@@ -334,8 +336,8 @@ class ClockPainter extends CustomPainter {
     } else {
       // 分の針
       final minuteAngle = (selectedMinute / 5) * math.pi * 2 / 12 - math.pi / 2;
-      final minuteEndX = center.dx + math.cos(minuteAngle) * (radius - 60);
-      final minuteEndY = center.dy + math.sin(minuteAngle) * (radius - 60);
+      final minuteEndX = center.dx + math.cos(minuteAngle) * (radius - 80);
+      final minuteEndY = center.dy + math.sin(minuteAngle) * (radius - 80);
       
       final minutePaint = Paint()
         ..color = Colors.red
