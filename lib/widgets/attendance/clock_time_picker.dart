@@ -320,32 +320,7 @@ class ClockPainter extends CustomPainter {
       ..style = PaintingStyle.stroke;
     canvas.drawCircle(center, radius, outerPaint);
 
-    // 数字の位置に小さな目盛りを描画（大きな円の内側、数字の外側）
-    final numbers = mode == ClockMode.hour 
-        ? [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
-        : [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
-
-    for (int i = 0; i < numbers.length; i++) {
-      final angle = (i * math.pi * 2 / 12) - math.pi / 2;
-
-      // 小さな目盛りを描画（数字ボタンの外側）
-      final tickPaint = Paint()
-        ..color = Colors.grey.shade400
-        ..strokeWidth = 2
-        ..style = PaintingStyle.stroke;
-      
-      // 目盛りの位置を調整（数字ボタンから適度な距離）
-      final tickStartX = center.dx + math.cos(angle) * (radius - 15);
-      final tickStartY = center.dy + math.sin(angle) * (radius - 15);
-      final tickEndX = center.dx + math.cos(angle) * (radius - 5);
-      final tickEndY = center.dy + math.sin(angle) * (radius - 5);
-      
-      canvas.drawLine(
-        Offset(tickStartX, tickStartY),
-        Offset(tickEndX, tickEndY),
-        tickPaint,
-      );
-    }
+    // 目盛り線は削除（数字ボタンと重なるため）
 
     // 中心点を描画
     final centerPaint = Paint()
