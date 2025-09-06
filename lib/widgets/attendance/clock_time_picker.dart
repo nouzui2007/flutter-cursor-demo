@@ -160,7 +160,7 @@ class _ClockTimePickerState extends State<ClockTimePicker> {
                     
                     // 数字ボタンを右にずらして、12と6が直線で結ばれるようにする
                     // 12と6の位置を調整して、時計の中心を通る垂直線に配置
-                    final offsetX = 20; // 右に20ピクセルずらす（針の付け根と12と6を直線に）
+                    final offsetX = -30; // 右に20ピクセルずらす（針の付け根と12と6を直線に）
                     final adjustedX = x + offsetX;
                     
                     final isSelected = mode == ClockMode.hour
@@ -216,7 +216,7 @@ class _ClockTimePickerState extends State<ClockTimePicker> {
                       
                       // 数字ボタンを右にずらして、12と6が直線で結ばれるようにする
                       // 24と18の位置を調整して、時計の中心を通る垂直線に配置
-                      final offsetX = 20; // 右に20ピクセルずらす（針の付け根と24と18を直線に）
+                      final offsetX = -30; // 右に20ピクセルずらす（針の付け根と24と18を直線に）
                       final adjustedX = x + offsetX;
                       
                       final isSelected = value == selectedHour;
@@ -319,11 +319,15 @@ class ClockPainter extends CustomPainter {
 
     // 針を描画
     if (mode == ClockMode.hour) {
-      // 時間の針（半径70）
+      // 時間の針
+      // 24時間形式の時間を12時間形式に変換して角度計算
       final hour12 = selectedHour == 0 ? 12 : (selectedHour > 12 ? selectedHour - 12 : selectedHour);
       final hourAngle = (hour12 - 1) * math.pi * 2 / 12 - math.pi / 2;
-      final hourEndX = center.dx + math.cos(hourAngle) * 70; // 内側の数字の位置（半径70）
-      final hourEndY = center.dy + math.sin(hourAngle) * 70;
+      
+      // 13-24時は外側の円（半径100）、1-12時は内側の円（半径70）
+      final needleRadius = selectedHour > 12 ? 100 : 70;
+      final hourEndX = center.dx + math.cos(hourAngle) * needleRadius;
+      final hourEndY = center.dy + math.sin(hourAngle) * needleRadius;
       
       final hourPaint = Paint()
         ..color = Colors.blue
