@@ -12,6 +12,7 @@ import 'widgets/email_dialog.dart';
 import 'screens/pin_list_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/api_connection_screen.dart';
+import 'screens/attendance_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -56,6 +57,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   final List<Widget> _screens = [
     const HomeScreen(),
     const MapPage(),
+    const AttendanceScreen(),
     const ApiConnectionScreen(),
   ];
 
@@ -79,6 +81,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.map),
             label: '地図',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.access_time),
+            label: '勤怠管理',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.api),
