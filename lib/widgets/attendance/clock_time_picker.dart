@@ -123,7 +123,7 @@ class _ClockTimePickerState extends State<ClockTimePicker> {
                 ),
               ],
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 12),
             // 時計
             Container(
               width: 320,
@@ -256,7 +256,7 @@ class _ClockTimePickerState extends State<ClockTimePicker> {
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 12),
             // アクションボタン
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
