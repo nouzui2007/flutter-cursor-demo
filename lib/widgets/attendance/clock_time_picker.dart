@@ -129,7 +129,6 @@ class _ClockTimePickerState extends State<ClockTimePicker> {
               width: 320,
               height: 320,
               decoration: BoxDecoration(
-                color: Colors.grey.shade100, // 薄いグレー背景
                 borderRadius: BorderRadius.circular(160), // 円形
               ),
               child: Stack(
@@ -299,8 +298,8 @@ class ClockPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final radius = size.width / 2 - 20;
+    final center = Offset(size.width / 2 - 3, size.height / 2);
+    final radius = size.width / 2 - 10;
 
     // 時計の外枠を描画
     final outerPaint = Paint()
@@ -322,8 +321,8 @@ class ClockPainter extends CustomPainter {
       // 時間の針（半径70）
       final hour12 = selectedHour == 0 ? 12 : (selectedHour > 12 ? selectedHour - 12 : selectedHour);
       final hourAngle = hour12 * math.pi * 2 / 12 - math.pi / 2;
-      final hourEndX = center.dx + math.cos(hourAngle) * 70; // 内側の数字の位置（半径70）
-      final hourEndY = center.dy + math.sin(hourAngle) * 70;
+      final hourEndX = center.dx + math.cos(hourAngle) * 50; // 内側の数字の位置（半径70）
+      final hourEndY = center.dy + math.sin(hourAngle) * 50;
       
       final hourPaint = Paint()
         ..color = Colors.blue
@@ -334,8 +333,8 @@ class ClockPainter extends CustomPainter {
     } else {
       // 分の針（半径100）
       final minuteAngle = (selectedMinute / 5) * math.pi * 2 / 12 - math.pi / 2;
-      final minuteEndX = center.dx + math.cos(minuteAngle) * 100; // 分の数字の位置（半径100）
-      final minuteEndY = center.dy + math.sin(minuteAngle) * 100;
+      final minuteEndX = center.dx + math.cos(minuteAngle) * 70; // 分の数字の位置（半径100）
+      final minuteEndY = center.dy + math.sin(minuteAngle) * 70;
       
       final minutePaint = Paint()
         ..color = Colors.red
