@@ -17,7 +17,7 @@ class LocationService {
     
     if (status.isPermanentlyDenied) {
       // 永続的に拒否されている場合は設定を開く
-      await openAppSettings();
+      await permission_handler.openAppSettings();
       return await permission_handler.Permission.location.status;
     }
     
