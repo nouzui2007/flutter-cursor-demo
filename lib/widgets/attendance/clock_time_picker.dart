@@ -144,7 +144,7 @@ class _ClockTimePickerState extends State<ClockTimePicker> {
                   // 内側の数字ボタン（1-12）
                   ...List.generate(12, (index) {
                     final numbers = mode == ClockMode.hour 
-                        ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+                        ? [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
                         : [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
                     final value = numbers[index];
                     final angle = (index * math.pi * 2 / 12) - math.pi / 2;
@@ -195,7 +195,7 @@ class _ClockTimePickerState extends State<ClockTimePicker> {
                   // 外側の数字ボタン（13-24）- 時間選択時のみ表示
                   if (mode == ClockMode.hour)
                     ...List.generate(12, (index) {
-                      final numbers = [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24];
+                      final numbers = [24, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
                       final value = numbers[index];
                       final angle = (index * math.pi * 2 / 12) - math.pi / 2;
                       final x = 150 + math.cos(angle) * 130; // 中心150, 半径130
@@ -320,7 +320,8 @@ class ClockPainter extends CustomPainter {
     // 針を描画
     if (mode == ClockMode.hour) {
       // 時間の針
-      final hourAngle = (selectedHour % 12) * math.pi * 2 / 12 - math.pi / 2;
+      final hour12 = selectedHour == 0 ? 12 : (selectedHour > 12 ? selectedHour - 12 : selectedHour);
+      final hourAngle = (hour12 - 1) * math.pi * 2 / 12 - math.pi / 2;
       final hourEndX = center.dx + math.cos(hourAngle) * (radius - 80);
       final hourEndY = center.dy + math.sin(hourAngle) * (radius - 80);
       
