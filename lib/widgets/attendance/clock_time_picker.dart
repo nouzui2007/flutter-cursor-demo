@@ -193,10 +193,10 @@ class _ClockTimePickerState extends State<ClockTimePicker> {
                           decoration: BoxDecoration(
                             color: isSelected ? Colors.blue : Colors.transparent,
                             shape: BoxShape.circle,
-                            border: Border.all(
-                              color: isSelected ? Colors.blue : Colors.grey.shade400,
+                            border: isSelected ? Border.all(
+                              color: Colors.blue,
                               width: 2,
-                            ),
+                            ) : null,
                           ),
                           child: Center(
                             child: Text(
@@ -329,6 +329,10 @@ class ClockPainter extends CustomPainter {
     canvas.drawCircle(center, 4, centerPaint);
 
     // 針を描画
+    final numbers = mode == ClockMode.hour 
+        ? [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+        : [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
+    
     final selectedIndex = mode == ClockMode.hour
         ? numbers.indexOf(selectedHour)
         : numbers.indexOf(selectedMinute);
