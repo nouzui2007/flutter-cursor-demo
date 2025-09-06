@@ -168,8 +168,8 @@ class _ClockTimePickerState extends State<ClockTimePicker> {
                         : [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
                     final value = numbers[index];
                     final angle = (index * math.pi * 2 / 12) - math.pi / 2;
-                    final x = 120 + math.cos(angle) * 80; // 半径を80に調整
-                    final y = 120 + math.sin(angle) * 80;
+                    final x = 120 + math.cos(angle) * 70; // 半径を70に調整（大きな円との隙間を作る）
+                    final y = 120 + math.sin(angle) * 70;
                     
                     final isSelected = mode == ClockMode.hour
                         ? value == selectedHour
@@ -320,26 +320,25 @@ class ClockPainter extends CustomPainter {
       ..style = PaintingStyle.stroke;
     canvas.drawCircle(center, radius, outerPaint);
 
-    // 数字の位置に小さな目盛りを描画
+    // 数字の位置に小さな目盛りを描画（大きな円の内側、数字の外側）
     final numbers = mode == ClockMode.hour 
         ? [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
         : [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
 
     for (int i = 0; i < numbers.length; i++) {
       final angle = (i * math.pi * 2 / 12) - math.pi / 2;
-      final x = center.dx + math.cos(angle) * (radius - 30);
-      final y = center.dy + math.sin(angle) * (radius - 30);
 
-      // 小さな目盛りを描画
+      // 小さな目盛りを描画（数字ボタンの外側）
       final tickPaint = Paint()
         ..color = Colors.grey.shade400
         ..strokeWidth = 2
         ..style = PaintingStyle.stroke;
       
-      final tickStartX = center.dx + math.cos(angle) * (radius - 40);
-      final tickStartY = center.dy + math.sin(angle) * (radius - 40);
-      final tickEndX = center.dx + math.cos(angle) * (radius - 20);
-      final tickEndY = center.dy + math.sin(angle) * (radius - 20);
+      // 目盛りの位置を調整（数字ボタンから適度な距離）
+      final tickStartX = center.dx + math.cos(angle) * (radius - 15);
+      final tickStartY = center.dy + math.sin(angle) * (radius - 15);
+      final tickEndX = center.dx + math.cos(angle) * (radius - 5);
+      final tickEndY = center.dy + math.sin(angle) * (radius - 5);
       
       canvas.drawLine(
         Offset(tickStartX, tickStartY),
@@ -361,8 +360,8 @@ class ClockPainter extends CustomPainter {
 
     if (selectedIndex != -1) {
       final angle = (selectedIndex * math.pi * 2 / 12) - math.pi / 2;
-      final endX = center.dx + math.cos(angle) * (radius - 50);
-      final endY = center.dy + math.sin(angle) * (radius - 50);
+      final endX = center.dx + math.cos(angle) * (radius - 60);
+      final endY = center.dy + math.sin(angle) * (radius - 60);
 
       final handPaint = Paint()
         ..color = mode == ClockMode.hour ? Colors.blue : Colors.red
