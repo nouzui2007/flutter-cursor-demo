@@ -126,13 +126,13 @@ class _ClockTimePickerState extends State<ClockTimePicker> {
             const SizedBox(height: 24),
             // 時計
             SizedBox(
-              width: 320,
-              height: 320,
+              width: 330,
+              height: 330,
               child: Stack(
                 children: [
                   // 時計の描画
                   CustomPaint(
-                    size: const Size(320, 320),
+                    size: const Size(330, 330),
                     painter: ClockPainter(
                       selectedHour: selectedHour,
                       selectedMinute: selectedMinute,
@@ -151,8 +151,8 @@ class _ClockTimePickerState extends State<ClockTimePicker> {
                     final angle = (index * math.pi * 2 / 12) - math.pi / 2;
                     // 時間は内側半径70、分は半径100
                     final radius = mode == ClockMode.hour ? 70 : 100;
-                    final x = 160 + math.cos(angle) * radius; // 中心を160に調整
-                    final y = 160 + math.sin(angle) * radius;
+                    final x = 170 + math.cos(angle) * radius; // 中心を170に調整（右に10ずらし）
+                    final y = 165 + math.sin(angle) * radius; // 中心を165に調整
                     
                     // 数字ボタンを左にずらして、12と6が直線で結ばれるようにする
                     // 12と6の位置を調整して、時計の中心を通る垂直線に配置
@@ -207,8 +207,8 @@ class _ClockTimePickerState extends State<ClockTimePicker> {
                       final value = numbers[index];
                       // 12時の位置から時計回りに配置
                       final angle = (index * math.pi * 2 / 12) - math.pi / 2;
-                      final x = 160 + math.cos(angle) * 100; // 中心160, 半径100（外側の数字）
-                      final y = 160 + math.sin(angle) * 100;
+                      final x = 170 + math.cos(angle) * 100; // 中心170, 半径100（外側の数字）
+                      final y = 165 + math.sin(angle) * 100; // 中心165
                       
                       // 数字ボタンを左にずらして、12と6が直線で結ばれるようにする
                       // 24と18の位置を調整して、時計の中心を通る垂直線に配置
