@@ -18,7 +18,6 @@ class ClockTimePicker extends StatefulWidget {
 class _ClockTimePickerState extends State<ClockTimePicker> {
   late int selectedHour;
   late int selectedMinute;
-  late bool isAM;
   ClockMode mode = ClockMode.hour;
 
   @override
@@ -30,30 +29,18 @@ class _ClockTimePickerState extends State<ClockTimePicker> {
   void _parseInitialTime() {
     if (widget.initialTime != null && widget.initialTime!.isNotEmpty) {
       final parts = widget.initialTime!.split(':');
-      final hours = int.parse(parts[0]);
-      final minutes = int.parse(parts[1]);
-
-      if (hours == 0) {
-        selectedHour = 12;
-        isAM = true;
-      } else if (hours <= 12) {
-        selectedHour = hours;
-        isAM = true;
-      } else {
-        selectedHour = hours - 12;
-        isAM = false;
-      }
-      selectedMinute = minutes;
+      selectedHour = int.parse(parts[0]);
+      selectedMinute = int.parse(parts[1]);
     } else {
       selectedHour = 9;
       selectedMinute = 0;
-      isAM = true;
     }
   }
 
   String get _displayTime {
+    final hour = selectedHour.toString().padLeft(2, '0');
     final minute = selectedMinute.toString().padLeft(2, '0');
-    return '$selectedHour:$minute ${isAM ? 'AM' : 'PM'}';
+    return '$hour:$minute';
   }
 
   void _handleHourTap(int hour) {
@@ -70,14 +57,7 @@ class _ClockTimePickerState extends State<ClockTimePicker> {
   }
 
   void _handleConfirm() {
-    int hour24 = selectedHour;
-    if (selectedHour == 12) {
-      hour24 = isAM ? 0 : 12;
-    } else {
-      hour24 = isAM ? selectedHour : selectedHour + 12;
-    }
-
-    final timeString = '${hour24.toString().padLeft(2, '0')}:${selectedMinute.toString().padLeft(2, '0')}';
+    final timeString = '${selectedHour.toString().padLeft(2, '0')}:${selectedMinute.toString().padLeft(2, '0')}';
     widget.onTimeChanged(timeString);
     Navigator.of(context).pop();
   }
@@ -146,13 +126,13 @@ class _ClockTimePickerState extends State<ClockTimePicker> {
             const SizedBox(height: 24),
             // 時計
             SizedBox(
-              width: 240,
-              height: 240,
+              width: 300,
+              height: 300,
               child: Stack(
                 children: [
                   // 時計の描画
                   CustomPaint(
-                    size: const Size(240, 240),
+                    size: const Size(300, 300),
                     painter: ClockPainter(
                       selectedHour: selectedHour,
                       selectedMinute: selectedMinute,
@@ -161,15 +141,15 @@ class _ClockTimePickerState extends State<ClockTimePicker> {
                       onMinuteTap: _handleMinuteTap,
                     ),
                   ),
-                  // タップ可能な数字ボタン
+                  // 内側の数字ボタン（1-12）
                   ...List.generate(12, (index) {
                     final numbers = mode == ClockMode.hour 
-                        ? [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+                        ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
                         : [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
                     final value = numbers[index];
                     final angle = (index * math.pi * 2 / 12) - math.pi / 2;
-                    final x = 120 + math.cos(angle) * 70; // 半径を70に調整（大きな円との隙間を作る）
-                    final y = 120 + math.sin(angle) * 70;
+                    final x = 150 + math.cos(angle) * 80; // 中心150, 半径80
+                    final y = 150 + math.sin(angle) * 80;
                     
                     final isSelected = mode == ClockMode.hour
                         ? value == selectedHour
@@ -212,59 +192,50 @@ class _ClockTimePickerState extends State<ClockTimePicker> {
                       ),
                     );
                   }),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-            // AM/PM切り替え
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  GestureDetector(
-                    onTap: () => setState(() => isAM = true),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 12,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isAM ? Theme.of(context).primaryColor : Colors.transparent,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        'AM',
-                        style: TextStyle(
-                          color: isAM ? Colors.white : Colors.black,
-                          fontWeight: FontWeight.w500,
+                  // 外側の数字ボタン（13-24）- 時間選択時のみ表示
+                  if (mode == ClockMode.hour)
+                    ...List.generate(12, (index) {
+                      final numbers = [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24];
+                      final value = numbers[index];
+                      final angle = (index * math.pi * 2 / 12) - math.pi / 2;
+                      final x = 150 + math.cos(angle) * 120; // 中心150, 半径120
+                      final y = 150 + math.sin(angle) * 120;
+                      
+                      final isSelected = value == selectedHour;
+                      
+                      return Positioned(
+                        left: x - 20,
+                        top: y - 20,
+                        child: GestureDetector(
+                          onTap: () {
+                            print('Tapped: $value (mode: $mode)');
+                            _handleHourTap(value);
+                          },
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: isSelected ? Colors.blue : Colors.transparent,
+                              shape: BoxShape.circle,
+                              border: isSelected ? Border.all(
+                                color: Colors.blue,
+                                width: 2,
+                              ) : null,
+                            ),
+                            child: Center(
+                              child: Text(
+                                value.toString(),
+                                style: TextStyle(
+                                  color: isSelected ? Colors.white : Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () => setState(() => isAM = false),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 12,
-                      ),
-                      decoration: BoxDecoration(
-                        color: !isAM ? Theme.of(context).primaryColor : Colors.transparent,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        'PM',
-                        style: TextStyle(
-                          color: !isAM ? Colors.white : Colors.black,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ),
+                      );
+                    }),
                 ],
               ),
             ),
@@ -330,11 +301,11 @@ class ClockPainter extends CustomPainter {
 
     // 針を描画
     final numbers = mode == ClockMode.hour 
-        ? [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+        ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
         : [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
     
     final selectedIndex = mode == ClockMode.hour
-        ? numbers.indexOf(selectedHour)
+        ? numbers.indexOf(selectedHour <= 12 ? selectedHour : selectedHour - 12)
         : numbers.indexOf(selectedMinute);
 
     if (selectedIndex != -1) {
