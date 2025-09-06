@@ -154,12 +154,16 @@ class _ClockTimePickerState extends State<ClockTimePicker> {
                     final x = 150 + math.cos(angle) * radius;
                     final y = 150 + math.sin(angle) * radius;
                     
+                    // 数字ボタンを左にずらして、12と6が直線で結ばれるようにする
+                    final offsetX = -10; // 左に10ピクセルずらす
+                    final adjustedX = x + offsetX;
+                    
                     final isSelected = mode == ClockMode.hour
                         ? value == selectedHour
                         : value == selectedMinute;
                     
                     return Positioned(
-                      left: x - 20,
+                      left: adjustedX - 20,
                       top: y - 20,
                       child: GestureDetector(
                         onTap: () {
@@ -205,10 +209,14 @@ class _ClockTimePickerState extends State<ClockTimePicker> {
                       final x = 150 + math.cos(angle) * 110; // 中心150, 半径110（外側の数字）
                       final y = 150 + math.sin(angle) * 110;
                       
+                      // 数字ボタンを左にずらして、12と6が直線で結ばれるようにする
+                      final offsetX = -10; // 左に10ピクセルずらす
+                      final adjustedX = x + offsetX;
+                      
                       final isSelected = value == selectedHour;
                       
                       return Positioned(
-                        left: x - 20,
+                        left: adjustedX - 20,
                         top: y - 20,
                         child: GestureDetector(
                           onTap: () {
