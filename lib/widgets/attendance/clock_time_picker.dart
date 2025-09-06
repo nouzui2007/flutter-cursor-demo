@@ -85,8 +85,13 @@ class _ClockTimePickerState extends State<ClockTimePicker> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
+      backgroundColor: Colors.white,
       child: Container(
         padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -143,13 +148,39 @@ class _ClockTimePickerState extends State<ClockTimePicker> {
             SizedBox(
               width: 240,
               height: 240,
-              child: CustomPaint(
-                painter: ClockPainter(
-                  selectedHour: selectedHour,
-                  selectedMinute: selectedMinute,
-                  mode: mode,
-                  onHourTap: _handleHourTap,
-                  onMinuteTap: _handleMinuteTap,
+              child: GestureDetector(
+                onTapDown: (details) {
+                  final RenderBox box = context.findRenderObject() as RenderBox;
+                  final localPosition = box.globalToLocal(details.globalPosition);
+                  final center = Offset(120, 120);
+                  final radius = 100;
+                  
+                  final dx = localPosition.dx - center.dx;
+                  final dy = localPosition.dy - center.dy;
+                  final distance = math.sqrt(dx * dx + dy * dy);
+                  
+                  if (distance <= radius) {
+                    final angle = math.atan2(dy, dx) + math.pi / 2;
+                    final normalizedAngle = (angle + 2 * math.pi) % (2 * math.pi);
+                    final index = (normalizedAngle * 12 / (2 * math.pi)).round() % 12;
+                    
+                    if (mode == ClockMode.hour) {
+                      final numbers = [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+                      _handleHourTap(numbers[index]);
+                    } else {
+                      final numbers = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
+                      _handleMinuteTap(numbers[index]);
+                    }
+                  }
+                },
+                child: CustomPaint(
+                  painter: ClockPainter(
+                    selectedHour: selectedHour,
+                    selectedMinute: selectedMinute,
+                    mode: mode,
+                    onHourTap: _handleHourTap,
+                    onMinuteTap: _handleMinuteTap,
+                  ),
                 ),
               ),
             ),

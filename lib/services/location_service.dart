@@ -12,7 +12,24 @@ class LocationService {
 
   /// 位置情報の許可を要求
   static Future<permission_handler.PermissionStatus> requestPermission() async {
-    return await permission_handler.Permission.location.request();
+    // まず現在の状態を確認
+    var status = await permission_handler.Permission.location.status;
+    
+    if (status.isPermanentlyDenied) {
+      // 永続的に拒否されている場合は設定を開く
+      await openAppSettings();
+      return await permission_handler.Permission.location.status;
+    }
+    
+    // 通常の許可要求
+    status = await permission_handler.Permission.location.request();
+    
+    // 拒否された場合は再度確認
+    if (status.isDenied) {
+      status = await permission_handler.Permission.location.request();
+    }
+    
+    return status;
   }
 
   /// 位置情報の許可が必要かどうかを確認
