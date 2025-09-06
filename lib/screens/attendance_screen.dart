@@ -49,10 +49,13 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   }
 
   void _updateWorkingStaff(List<WorkingStaff> newWorkingStaff) {
+    print('🔍 _updateWorkingStaff called with ${newWorkingStaff.length} staff');
     final dateKey = AttendanceDataService.getDateKey(currentDate);
+    print('📅 Date key: $dateKey');
     setState(() {
       staffData[dateKey] = newWorkingStaff;
     });
+    print('💾 Staff data updated: ${staffData[dateKey]?.length ?? 0} staff for $dateKey');
     AttendanceDataService.saveStaffData(staffData);
   }
 

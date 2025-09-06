@@ -21,16 +21,21 @@ class _StaffSelectorState extends State<StaffSelector> {
   bool _showSelector = false;
 
   void _toggleStaffSelection(MasterStaff masterStaff) {
-    final existingStaff = widget.workingStaffList
-        .firstWhere((ws) => ws.id == masterStaff.id, orElse: () => null as WorkingStaff);
+    print('🔍 _toggleStaffSelection called for ${masterStaff.name}');
+    print('📋 Current working staff count: ${widget.workingStaffList.length}');
+    
+    final existingStaffIndex = widget.workingStaffList
+        .indexWhere((ws) => ws.id == masterStaff.id);
 
-    if (existingStaff != null) {
+    if (existingStaffIndex != -1) {
       // 既に選択済みの場合は削除
-      widget.onUpdateWorkingStaff(
-        widget.workingStaffList.where((ws) => ws.id != masterStaff.id).toList(),
-      );
+      print('❌ Removing staff: ${masterStaff.name}');
+      final updatedList = List<WorkingStaff>.from(widget.workingStaffList);
+      updatedList.removeAt(existingStaffIndex);
+      widget.onUpdateWorkingStaff(updatedList);
     } else {
       // 新規選択の場合は追加
+      print('✅ Adding staff: ${masterStaff.name}');
       final newWorkingStaff = WorkingStaff.fromMasterStaff(masterStaff);
       widget.onUpdateWorkingStaff([...widget.workingStaffList, newWorkingStaff]);
     }
