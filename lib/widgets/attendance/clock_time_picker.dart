@@ -151,7 +151,7 @@ class _ClockTimePickerState extends State<ClockTimePicker> {
                     final angle = (index * math.pi * 2 / 12) - math.pi / 2;
                     // 時間は内側半径70、分は半径100
                     final radius = mode == ClockMode.hour ? 70 : 100;
-                    final x = 170 + math.cos(angle) * radius; // 中心を170に調整（右に10ずらし）
+                    final x = 165 + math.cos(angle) * radius; // 中心を165に調整（元に戻す）
                     final y = 165 + math.sin(angle) * radius; // 中心を165に調整
                     
                     // 数字ボタンを左にずらして、12と6が直線で結ばれるようにする
@@ -207,7 +207,7 @@ class _ClockTimePickerState extends State<ClockTimePicker> {
                       final value = numbers[index];
                       // 12時の位置から時計回りに配置
                       final angle = (index * math.pi * 2 / 12) - math.pi / 2;
-                      final x = 170 + math.cos(angle) * 100; // 中心170, 半径100（外側の数字）
+                      final x = 165 + math.cos(angle) * 100; // 中心165, 半径100（外側の数字）
                       final y = 165 + math.sin(angle) * 100; // 中心165
                       
                       // 数字ボタンを左にずらして、12と6が直線で結ばれるようにする
