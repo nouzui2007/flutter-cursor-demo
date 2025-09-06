@@ -126,17 +126,17 @@ class _ClockTimePickerState extends State<ClockTimePicker> {
             const SizedBox(height: 24),
             // 時計
             Container(
-              width: 350,
-              height: 350,
+              width: 320,
+              height: 320,
               decoration: BoxDecoration(
                 color: Colors.grey.shade100, // 薄いグレー背景
-                borderRadius: BorderRadius.circular(175), // 円形
+                borderRadius: BorderRadius.circular(160), // 円形
               ),
               child: Stack(
                 children: [
                   // 時計の描画
                   CustomPaint(
-                    size: const Size(350, 350),
+                    size: const Size(320, 320),
                     painter: ClockPainter(
                       selectedHour: selectedHour,
                       selectedMinute: selectedMinute,
@@ -155,8 +155,8 @@ class _ClockTimePickerState extends State<ClockTimePicker> {
                     final angle = (index * math.pi * 2 / 12) - math.pi / 2;
                     // 時間は内側半径70、分は半径100
                     final radius = mode == ClockMode.hour ? 70 : 100;
-                    final x = 175 + math.cos(angle) * radius; // 中心を175に調整
-                    final y = 175 + math.sin(angle) * radius; // 中心を175に調整
+                    final x = 160 + math.cos(angle) * radius; // 中心を160に調整
+                    final y = 160 + math.sin(angle) * radius; // 中心を160に調整
                     
                     // 数字ボタンを左にずらして、12と6が直線で結ばれるようにする
                     // 12と6の位置を調整して、時計の中心を通る垂直線に配置
@@ -211,8 +211,8 @@ class _ClockTimePickerState extends State<ClockTimePicker> {
                       final value = numbers[index];
                       // 12時の位置から時計回りに配置
                       final angle = (index * math.pi * 2 / 12) - math.pi / 2;
-                      final x = 175 + math.cos(angle) * 100; // 中心175, 半径100（外側の数字）
-                      final y = 175 + math.sin(angle) * 100; // 中心175
+                      final x = 160 + math.cos(angle) * 100; // 中心160, 半径100（外側の数字）
+                      final y = 160 + math.sin(angle) * 100; // 中心160
                       
                       // 数字ボタンを左にずらして、12と6が直線で結ばれるようにする
                       // 24と18の位置を調整して、時計の中心を通る垂直線に配置
