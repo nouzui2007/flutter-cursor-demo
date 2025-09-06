@@ -148,8 +148,8 @@ class _ClockTimePickerState extends State<ClockTimePicker> {
                         : [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
                     final value = numbers[index];
                     final angle = (index * math.pi * 2 / 12) - math.pi / 2;
-                    final x = 150 + math.cos(angle) * 80; // 中心150, 半径80
-                    final y = 150 + math.sin(angle) * 80;
+                    final x = 150 + math.cos(angle) * 100; // 中心150, 半径100
+                    final y = 150 + math.sin(angle) * 100;
                     
                     final isSelected = mode == ClockMode.hour
                         ? value == selectedHour
@@ -198,8 +198,8 @@ class _ClockTimePickerState extends State<ClockTimePicker> {
                       final numbers = [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24];
                       final value = numbers[index];
                       final angle = (index * math.pi * 2 / 12) - math.pi / 2;
-                      final x = 150 + math.cos(angle) * 120; // 中心150, 半径120
-                      final y = 150 + math.sin(angle) * 120;
+                      final x = 150 + math.cos(angle) * 130; // 中心150, 半径130
+                      final y = 150 + math.sin(angle) * 130;
                       
                       final isSelected = value == selectedHour;
                       
@@ -284,40 +284,64 @@ class ClockPainter extends CustomPainter {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width / 2 - 20;
 
-    // 大きな外周円を描画（数字の外側）
+    // 時計の外枠を描画
     final outerPaint = Paint()
       ..color = Colors.grey.shade300
       ..strokeWidth = 3
       ..style = PaintingStyle.stroke;
     canvas.drawCircle(center, radius, outerPaint);
 
-    // 目盛り線は削除（数字ボタンと重なるため）
+    // 時計の目盛りを描画
+    for (int i = 0; i < 12; i++) {
+      final angle = (i * math.pi * 2 / 12) - math.pi / 2;
+      final startX = center.dx + math.cos(angle) * (radius - 20);
+      final startY = center.dy + math.sin(angle) * (radius - 20);
+      final endX = center.dx + math.cos(angle) * (radius - 10);
+      final endY = center.dy + math.sin(angle) * (radius - 10);
+      
+      final tickPaint = Paint()
+        ..color = Colors.grey.shade400
+        ..strokeWidth = 2
+        ..strokeCap = StrokeCap.round;
+      
+      canvas.drawLine(
+        Offset(startX, startY),
+        Offset(endX, endY),
+        tickPaint,
+      );
+    }
 
     // 中心点を描画
     final centerPaint = Paint()
-      ..color = Colors.blue
+      ..color = Colors.black
       ..style = PaintingStyle.fill;
-    canvas.drawCircle(center, 4, centerPaint);
+    canvas.drawCircle(center, 6, centerPaint);
 
     // 針を描画
-    final numbers = mode == ClockMode.hour 
-        ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-        : [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
-    
-    final selectedIndex = mode == ClockMode.hour
-        ? numbers.indexOf(selectedHour <= 12 ? selectedHour : selectedHour - 12)
-        : numbers.indexOf(selectedMinute);
-
-    if (selectedIndex != -1) {
-      final angle = (selectedIndex * math.pi * 2 / 12) - math.pi / 2;
-      final endX = center.dx + math.cos(angle) * (radius - 60);
-      final endY = center.dy + math.sin(angle) * (radius - 60);
-
-      final handPaint = Paint()
-        ..color = mode == ClockMode.hour ? Colors.blue : Colors.red
+    if (mode == ClockMode.hour) {
+      // 時間の針
+      final hourAngle = (selectedHour % 12) * math.pi * 2 / 12 - math.pi / 2;
+      final hourEndX = center.dx + math.cos(hourAngle) * (radius - 80);
+      final hourEndY = center.dy + math.sin(hourAngle) * (radius - 80);
+      
+      final hourPaint = Paint()
+        ..color = Colors.blue
+        ..strokeWidth = 6
+        ..strokeCap = StrokeCap.round;
+      
+      canvas.drawLine(center, Offset(hourEndX, hourEndY), hourPaint);
+    } else {
+      // 分の針
+      final minuteAngle = (selectedMinute / 5) * math.pi * 2 / 12 - math.pi / 2;
+      final minuteEndX = center.dx + math.cos(minuteAngle) * (radius - 60);
+      final minuteEndY = center.dy + math.sin(minuteAngle) * (radius - 60);
+      
+      final minutePaint = Paint()
+        ..color = Colors.red
         ..strokeWidth = 4
         ..strokeCap = StrokeCap.round;
-      canvas.drawLine(center, Offset(endX, endY), handPaint);
+      
+      canvas.drawLine(center, Offset(minuteEndX, minuteEndY), minutePaint);
     }
   }
 
