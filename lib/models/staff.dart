@@ -28,6 +28,21 @@ class MasterStaff {
       employeeId: json['employeeId'],
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is MasterStaff &&
+        other.id == id &&
+        other.name == name &&
+        other.department == department &&
+        other.employeeId == employeeId;
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^ name.hashCode ^ department.hashCode ^ employeeId.hashCode;
+  }
 }
 
 class WorkingStaff extends MasterStaff {
@@ -93,5 +108,20 @@ class WorkingStaff extends MasterStaff {
       endTime: '',
       isSelected: true,
     );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is WorkingStaff &&
+        super == other &&
+        other.startTime == startTime &&
+        other.endTime == endTime &&
+        other.isSelected == isSelected;
+  }
+
+  @override
+  int get hashCode {
+    return super.hashCode ^ startTime.hashCode ^ endTime.hashCode ^ isSelected.hashCode;
   }
 }
