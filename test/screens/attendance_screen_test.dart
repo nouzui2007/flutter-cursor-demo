@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_application_1/screens/attendance_screen.dart';
-import 'package:flutter_application_1/models/staff.dart';
 
 void main() {
   group('AttendanceScreen', () {

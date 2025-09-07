@@ -43,7 +43,7 @@ class TimeEntryForm extends StatelessWidget {
       final hours = diffMinutes ~/ 60;
       final minutes = diffMinutes % 60;
       
-      return '${hours}時間${minutes}分';
+      return '$hours時間$minutes分';
     } catch (e) {
       return '--';
     }
@@ -75,7 +75,7 @@ class TimeEntryForm extends StatelessWidget {
     final hours = totalMinutes ~/ 60;
     final minutes = totalMinutes % 60;
     
-    return '${hours}時間${minutes}分';
+    return '$hours時間$minutes分';
   }
 
   String _formatTimeDisplay(String time) {

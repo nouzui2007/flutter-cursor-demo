@@ -102,8 +102,8 @@ void main() {
     group('勤務時間計算', () {
       test('正常な勤務時間の計算', () {
         // Arrange
-        final startTime = '09:00';
-        final endTime = '18:00';
+        const startTime = '09:00';
+        const endTime = '18:00';
 
         // Act
         final workTime = _calculateWorkTime(startTime, endTime);
@@ -114,8 +114,8 @@ void main() {
 
       test('30分の勤務時間の計算', () {
         // Arrange
-        final startTime = '09:00';
-        final endTime = '09:30';
+        const startTime = '09:00';
+        const endTime = '09:30';
 
         // Act
         final workTime = _calculateWorkTime(startTime, endTime);
@@ -126,8 +126,8 @@ void main() {
 
       test('1時間30分の勤務時間の計算', () {
         // Arrange
-        final startTime = '09:00';
-        final endTime = '10:30';
+        const startTime = '09:00';
+        const endTime = '10:30';
 
         // Act
         final workTime = _calculateWorkTime(startTime, endTime);
@@ -138,8 +138,8 @@ void main() {
 
       test('空の時間での計算', () {
         // Arrange
-        final startTime = '';
-        final endTime = '';
+        const startTime = '';
+        const endTime = '';
 
         // Act
         final workTime = _calculateWorkTime(startTime, endTime);
@@ -150,8 +150,8 @@ void main() {
 
       test('無効な時間での計算（終了時間が開始時間より前）', () {
         // Arrange
-        final startTime = '18:00';
-        final endTime = '09:00';
+        const startTime = '18:00';
+        const endTime = '09:00';
 
         // Act
         final workTime = _calculateWorkTime(startTime, endTime);
@@ -162,8 +162,8 @@ void main() {
 
       test('同じ時間での計算', () {
         // Arrange
-        final startTime = '09:00';
-        final endTime = '09:00';
+        const startTime = '09:00';
+        const endTime = '09:00';
 
         // Act
         final workTime = _calculateWorkTime(startTime, endTime);
@@ -176,8 +176,8 @@ void main() {
     group('時間フォーマット', () {
       test('24時間形式から12時間形式への変換（AM）', () {
         // Arrange
-        final time9 = '09:00';
-        final time11 = '11:30';
+        const time9 = '09:00';
+        const time11 = '11:30';
 
         // Act
         final formatted9 = _formatTimeDisplay(time9);
@@ -190,8 +190,8 @@ void main() {
 
       test('24時間形式から12時間形式への変換（PM）', () {
         // Arrange
-        final time14 = '14:30';
-        final time18 = '18:00';
+        const time14 = '14:30';
+        const time18 = '18:00';
 
         // Act
         final formatted14 = _formatTimeDisplay(time14);
@@ -204,8 +204,8 @@ void main() {
 
       test('深夜時間の変換', () {
         // Arrange
-        final time0 = '00:15';
-        final time12 = '12:00';
+        const time0 = '00:15';
+        const time12 = '12:00';
 
         // Act
         final formatted0 = _formatTimeDisplay(time0);
@@ -218,7 +218,7 @@ void main() {
 
       test('空の時間のフォーマット', () {
         // Arrange
-        final emptyTime = '';
+        const emptyTime = '';
 
         // Act
         final formatted = _formatTimeDisplay(emptyTime);
@@ -229,7 +229,7 @@ void main() {
 
       test('無効な時間のフォーマット', () {
         // Arrange
-        final invalidTime = 'invalid';
+        const invalidTime = 'invalid';
 
         // Act
         final formatted = _formatTimeDisplay(invalidTime);
@@ -349,7 +349,7 @@ String _calculateWorkTime(String startTime, String endTime) {
     final hours = diffMinutes ~/ 60;
     final minutes = diffMinutes % 60;
     
-    return '${hours}時間${minutes}分';
+    return '$hours時間$minutes分';
   } catch (e) {
     return '--';
   }
@@ -401,5 +401,5 @@ String _getTotalWorkTime(List<WorkingStaff> staffList) {
   final hours = totalMinutes ~/ 60;
   final minutes = totalMinutes % 60;
   
-  return '${hours}時間${minutes}分';
+  return '$hours時間$minutes分';
 }
